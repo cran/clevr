@@ -177,7 +177,7 @@ eval_report_pairs <- function(true_pairs, pred_pairs, num_pairs = NULL, ordered=
 #'   (linked) pairs given a set of _ground truth_ coreferent pairs.
 #'
 #' @details The precision is defined as:
-#'   \deqn{\frac{|T \cup P|}{|P|}}{|T ∩ P|/|P|}
+#'   \deqn{\frac{|T \cap P|}{|P|}}{|T ∩ P|/|P|}
 #'   where \eqn{T} is the set of true coreferent pairs and \eqn{P} is the
 #'   set of predicted coreferent pairs.
 #'
@@ -212,7 +212,7 @@ precision_pairs <- function(true_pairs, pred_pairs, ordered=FALSE) {
 #'   (linked) pairs given a set of _ground truth_ coreferent pairs.
 #'
 #' @details The recall is defined as:
-#'   \deqn{\frac{|T \cup P|}{|T|}}{|T ∩ P|/|T|}
+#'   \deqn{\frac{|T \cap P|}{|T|}}{|T ∩ P|/|T|}
 #'   where \eqn{T} is the set of true coreferent pairs and \eqn{P} is the
 #'   set of predicted coreferent pairs.
 #'
@@ -300,7 +300,7 @@ f_measure_pairs <- function(true_pairs, pred_pairs, beta=1, ordered=FALSE) {
 #'   (linked) pairs given a set of _ground truth_ coreferent pairs.
 #'
 #' @details The specificity is defined as:
-#'   \deqn{\frac{|P' \cup T'|}{|P'|}}{|P' ∩ T'|/|P'|}
+#'   \deqn{\frac{|P' \cap T'|}{|P'|}}{|P' ∩ T'|/|P'|}
 #'   where \eqn{T'} is the set of true non-coreferent pairs, \eqn{P} is the
 #'   set of predicted non-coreferent pairs.
 #'
@@ -337,7 +337,7 @@ specificity_pairs <- function(true_pairs, pred_pairs, num_pairs, ordered=FALSE) 
 #'   (linked) pairs given a set of _ground truth_ coreferent pairs.
 #'
 #' @details The accuracy is defined as:
-#'   \deqn{\frac{|T \cup P| + |T' \cup P'|}{N}}{(|T ∩ P| + |T' ∩ P'|)/N}
+#'   \deqn{\frac{|T \cap P| + |T' \cap P'|}{N}}{(|T ∩ P| + |T' ∩ P'|)/N}
 #'   where:
 #'   * \eqn{T} is the set of true coreferent pairs,
 #'   * \eqn{P} is the set of predicted coreferent pairs,
@@ -379,7 +379,7 @@ accuracy_pairs <- function(true_pairs, pred_pairs, num_pairs, ordered=FALSE) {
 #'   pairs.
 #'
 #' @details The balanced accuracy is defined as:
-#'   \deqn{\frac{\frac{|T \cup P|}{|P|} + \frac{|T' \cup P'|}{|P'|}}{2}}{|T ∩ P|/(2|P|) + |T' ∩ P'|/(2|P'|)}
+#'   \deqn{\frac{\frac{|T \cap P|}{|P|} + \frac{|T' \cap P'|}{|P'|}}{2}}{|T ∩ P|/(2|P|) + |T' ∩ P'|/(2|P'|)}
 #'   where:
 #'   * \eqn{T} is the set of true coreferent pairs,
 #'   * \eqn{P} is the set of predicted coreferent pairs,
@@ -437,7 +437,7 @@ balanced_accuracy_pairs <- function(true_pairs, pred_pairs, num_pairs, ordered=F
 #' @references
 #' Fowlkes, E. B. and Mallows, C. L. "A Method for Comparing Two Hierarchical
 #' Clusterings." _Journal of the American Statistical Association_ **78:383**,
-#' 553-569, (1983). DOI: [10.1080/01621459.1983.10478008](https://doi.org/10.1080/01621459.1983.10478008).
+#' 553-569, (1983). \doi{10.1080/01621459.1983.10478008}.
 #'
 #' @examples
 #' true_pairs <- rbind(c(1,2), c(2,3), c(1,3)) # ground truth is 3-clique

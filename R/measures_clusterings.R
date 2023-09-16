@@ -1,6 +1,6 @@
 
 #' @importFrom stats xtabs
-#' @importFrom Matrix rowSums colSums tcrossprod crossprod
+#' @importFrom Matrix rowSums colSums crossprod
 #' @noRd
 pair_contingency_table_clusters <- function(true, pred) {
   if (length(true) != length(pred))
@@ -17,9 +17,9 @@ pair_contingency_table_clusters <- function(true, pred) {
   num_items <- length(true)
   pair_ct <- matrix(nrow = 2, ncol = 2, data = NA_integer_)
   pair_ct[1,1] <- sum_squares - num_items # TP
-  pair_ct[2,1] <- sum(tcrossprod(ct, sizes_true)) - sum_squares # FP
+  pair_ct[2,1] <- sum(ct %*% sizes_true) - sum_squares # FP
   pair_ct[1,2] <- sum(crossprod(ct, sizes_pred)) - sum_squares # FN
-  pair_ct[2,2] <- num_items ** 2 - pair_ct[1,2] - pair_ct[2,1] - sum_squares # TN
+  pair_ct[2,2] <- num_items^2 - pair_ct[1,2] - pair_ct[2,1] - sum_squares # TN
   dimnames(pair_ct) <- list("Prediction" = c("TRUE", "FALSE"), "Truth" = c("TRUE", "FALSE"))
   return(as.table(pair_ct))
 }
@@ -134,7 +134,7 @@ eval_report_clusters <- function(true, pred) {
 #' @references
 #' Rand, W. M. "Objective Criteria for the Evaluation of Clustering Methods."
 #' _Journal of the American Statistical Association_ 66(336), 846-850 (1971).
-#' DOI: [10.1080/01621459.1971.10482356](https://doi.org/10.1080/01621459.1971.10482356)
+#' \doi{10.1080/01621459.1971.10482356}
 #'
 #' @examples
 #' true <- c(1,1,1,2,2)  # ground truth clustering
@@ -178,7 +178,7 @@ rand_index <- function(true, pred) {
 #'
 #' @references
 #' Hubert, L., Arabie, P. "Comparing partitions." _Journal of Classification_
-#' **2**, 193–218 (1985). DOI: [10.1007/BF01908075](https://doi.org/10.1007/BF01908075)
+#' **2**, 193–218 (1985). \doi{10.1007/BF01908075}
 #'
 #' @export
 adj_rand_index <- function(true, pred) {
@@ -205,7 +205,7 @@ adj_rand_index <- function(true, pred) {
 #' @references
 #' Fowlkes, E. B. and Mallows, C. L. "A Method for Comparing Two Hierarchical
 #' Clusterings." _Journal of the American Statistical Association_ **78:383**,
-#' 553-569, (1983). DOI: [10.1080/01621459.1983.10478008](https://doi.org/10.1080/01621459.1983.10478008).
+#' 553-569, (1983). \doi{10.1080/01621459.1983.10478008}
 #'
 #' @examples
 #' true <- c(1,1,1,2,2)  # ground truth clustering
@@ -313,6 +313,10 @@ completeness <- function(true, pred) {
 #'    are arbitrary.
 #' @param pred predicted clustering represented as a membership
 #'    vector.
+#' @param beta non-negative weight. A value of 0 assigns no weight to
+#'   completeness (i.e. the measure reduces to homogeneity), while larger
+#'   values assign increasing weight to completeness. A value of 1 weights
+#'   completeness and homogeneity equally.
 #'
 #' @references
 #' Rosenberg, A. and Hirschberg, J. "V-measure: A conditional entropy-based external cluster evaluation measure." _Proceedings of the 2007 Joint Conference on Empirical Methods in Natural Language Processing and Computational Natural Language Learning_ (EMNLP-CoNLL), (2007).
@@ -329,9 +333,9 @@ completeness <- function(true, pred) {
 #' v_measure(true, pred)
 #'
 #' @export
-v_measure <- function(true, pred) {
+v_measure <- function(true, pred, beta=1) {
   ct <- contingency_table_clusters(true, pred)
-  v_measure_ct(ct)
+  v_measure_ct(ct, beta=beta)
 }
 
 
@@ -357,12 +361,12 @@ v_measure <- function(true, pred) {
 #' @references
 #' Arabie, P. and Boorman, S. A. "Multidimensional scaling of measures of
 #' distance between partitions." _Journal of Mathematical Psychology_ **10:2**,
-#' 148-203, (1973). DOI: [10.1016/0022-2496(73)90012-6](https://doi.org/10.1016/0022-2496(73)90012-6).
+#' 148-203, (1973). \doi{10.1016/0022-2496(73)90012-6}
 #'
 #' Meilă, M. "Comparing Clusterings by the Variation of Information." In:
 #' Learning Theory and Kernel Machines, Lecture Notes in Computer Science
-#' **2777**, Springer, Berlin, Heidelberg, (2003). DOI:
-#' [10.1007/978-3-540-45167-9_14](https://doi.org/10.1007/978-3-540-45167-9_14).
+#' **2777**, Springer, Berlin, Heidelberg, (2003).
+#' \doi{10.1007/978-3-540-45167-9_14}
 #'
 #' @examples
 #' true <- c(1,1,1,2,2)  # ground truth clustering
@@ -481,8 +485,8 @@ v_measure_ct <- function(ct, beta=1.0) {
   entropy_true <- entropy_counts(true_counts)
   entropy_pred <- entropy_counts(pred_counts)
   mi <- mutual_info_ct(ct)
-  completeness <- ifelse(entropy_true==0, 1.0, mi / entropy_true)
-  homogeneity <- ifelse(entropy_pred==0, 1.0, mi / entropy_pred)
+  homogeneity <- ifelse(entropy_true==0, 1.0, mi / entropy_true)
+  completeness <- ifelse(entropy_pred==0, 1.0, mi / entropy_pred)
   alpha <- 1/(1 + beta^2)
   1 / (alpha / homogeneity + (1 - alpha) / completeness)
 }
